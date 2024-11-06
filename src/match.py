@@ -80,7 +80,7 @@ def interpolate_line(coords, num_points=10):
         interpolated_points = (p1[None, :] * (1 - t)[:, None] + p2[None, :] * t[:, None]).tolist()
         interpolated_coords.extend(interpolated_points)
     interpolated_coords.append(coords[-1])
-    return interpolated_coords 
+    return interpolated_coords
 
 # 提取路网坐标
 road_coordinates = road_df['coordinates'].apply(eval).tolist()
