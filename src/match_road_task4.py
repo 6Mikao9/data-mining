@@ -7,13 +7,14 @@ from shapely.geometry import Point, LineString
 import ast
 
 # 读取轨迹数据
-traj_df = pd.read_csv('../data/traj.csv')
+traj_df = pd.read_csv('../data/jump_task.csv')
 traj_df = traj_df.dropna(subset=['coordinates'])
 # 读取路网数据
 road_df = pd.read_csv('../data/road.csv')
 
 # 提取轨迹坐标
 traj_df['coordinates'] = traj_df['coordinates'].apply(ast.literal_eval)
+
 
 # 路网插值
 def interpolate_line(coords, num_points=10):
@@ -26,6 +27,7 @@ def interpolate_line(coords, num_points=10):
         interpolated_coords.extend(interpolated_points)
     interpolated_coords.append(coords[-1])
     return interpolated_coords
+
 
 # 提取路网坐标
 road_coordinates = road_df['coordinates'].apply(ast.literal_eval).tolist()
@@ -43,6 +45,7 @@ for idx, coords in enumerate(road_coordinates):
 # 构建 KDTree
 tree = cKDTree(road_coords_flattened)
 
+
 # 匹配轨迹点到最近的路网点，并获取对应的路段 ID
 def match_to_road(traj_coordinates, tree, road_ids):
     matched_points = []
@@ -53,13 +56,14 @@ def match_to_road(traj_coordinates, tree, road_ids):
         matched_road_ids.append(road_ids[index])
     return matched_points, matched_road_ids
 
+
 # 匹配轨迹
 matched_coordinates, matched_road_ids = match_to_road(traj_df['coordinates'].tolist(), tree, road_ids)
 
 # 将匹配后的坐标和路段 ID 重新放回 DataFrame
 traj_df['matched_coordinates'] = matched_coordinates
 traj_df['matched_road_id'] = matched_road_ids
-traj_df.to_csv('matched.csv', index=False)
+traj_df.to_csv('task4_matched.csv', index=False)
 
 # 可视化
 # 将路网数据转换为 GeoDataFrame
